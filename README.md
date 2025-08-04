@@ -4,6 +4,8 @@ Multi-agent cryptocurrency chatbot using CrewAI and Groq LLMs.
 
 ![CryptoCrew](mp.png)
 
+Demo: https://drive.google.com/file/d/1M1e4E2Dd2vxbW5lKz6Cahn891EGu33I6/view?usp=sharing
+
 ## Architecture
 
 - **Intent Router**: Classifies user intent and extracts cryptocurrency mentions
