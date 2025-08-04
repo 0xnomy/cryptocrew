@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoCrew Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                            600: '#475569',
+                            500: '#64748b',
+                        },
+                        primary: {
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #7c3aed;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6d28d9;
+        }
+
+        /* Typing indicator animation */
+        @keyframes typing {
+            0% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.5;
+            }
+        }
+
+        .typing-indicator span {
+            animation: typing 1.5s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        /* Light mode styles */
+        .light-mode {
+            background-color: #f8fafc !important;
+            color: #1e293b !important;
+        }
+
+        .light-mode .bg-dark-900 {
+            background-color: #f8fafc !important;
+        }
+
+        .light-mode .bg-dark-800 {
+            background-color: #e2e8f0 !important;
+        }
+
+        .light-mode .bg-dark-700 {
+            background-color: #cbd5e1 !important;
+        }
+
+        .light-mode .bg-dark-600 {
+            background-color: #94a3b8 !important;
+        }
+
+        .light-mode .text-gray-100 {
+            color: #1e293b !important;
+        }
+
+        .light-mode .text-gray-300 {
+            color: #475569 !important;
+        }
+
+        .light-mode .text-gray-400 {
+            color: #64748b !important;
+        }
+
+        .light-mode .text-gray-500 {
+            color: #94a3b8 !important;
+        }
+
+        .light-mode .border-dark-700 {
+            border-color: #cbd5e1 !important;
+        }
+
+        .light-mode .border-dark-600 {
+            border-color: #94a3b8 !important;
+        }
+
+        .light-mode .hover\:bg-dark-700:hover {
+            background-color: #cbd5e1 !important;
+        }
+
+        .light-mode .hover\:bg-dark-500:hover {
+            background-color: #94a3b8 !important;
+        }
+
+        .light-mode .placeholder-gray-500::placeholder {
+            color: #94a3b8 !important;
+        }
+
+        .light-mode .focus\:ring-primary-600:focus {
+            --tw-ring-color: #7c3aed !important;
+        }
+
+        .light-mode .focus\:border-transparent:focus {
+            border-color: transparent !important;
+        }
+
+        /* Custom slider styling */
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #7c3aed;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider::-moz-range-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #7c3aed;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider::-webkit-slider-track {
+            background: #475569;
+            border-radius: 10px;
+            height: 8px;
+        }
+
+        .slider::-moz-range-track {
+            background: #475569;
+            border-radius: 10px;
+            height: 8px;
+            border: none;
+        }
+
+        /* Light mode slider */
+        .light-mode .slider::-webkit-slider-track {
+            background: #94a3b8;
+        }
+
+        .light-mode .slider::-moz-range-track {
+            background: #94a3b8;
+        }
+
+        /* Message formatting */
+        .message-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+
+        .message-content strong {
+            font-weight: 600;
+            color: #fbbf24;
+        }
+
+        .message-content em {
+            font-style: italic;
+        }
+
+        .message-content ul {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-content ol {
+            list-style-type: decimal;
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-content li {
+            margin-bottom: 0.25rem;
+        }
+
+        .message-content p {
+            margin-bottom: 0.75rem;
+        }
+
+        .message-content p:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+
+<body class="bg-dark-900 text-gray-100 h-screen flex flex-col dark-mode">
+    <!-- Header -->
+    <header class="bg-dark-800 p-4 shadow-lg border-b border-dark-700 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div
+                class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-600 to-purple-900 flex items-center justify-center">
+                <i class="fas fa-robot text-white"></i>
+            </div>
+            <h1 class="text-xl font-bold">CryptoCrew</h1>
+        </div>
+        <div class="flex items-center space-x-2">
+            <button id="settingsButton" class="p-2 rounded-full hover:bg-dark-700 transition-colors">
+                <i class="fas fa-cog text-gray-400"></i>
+            </button>
+            <button id="themeToggle" class="p-2 rounded-full hover:bg-dark-700 transition-colors">
+                <i class="fas fa-moon text-yellow-300" id="themeIcon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Chat Messages Area -->
+    <div id="messages" class="flex-1 overflow-y-auto p-4 space-y-6 bg-dark-900">
+        <!-- Welcome message -->
+        <div class="flex justify-start">
+            <div class="bg-dark-700 rounded-xl px-6 py-4 max-w-4xl w-full shadow-lg border border-dark-600">
+                <div class="flex items-start space-x-4">
+                    <div
+                        class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary-600 to-purple-900 flex items-center justify-center">
+                        <i class="fas fa-robot text-white"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-medium text-primary-400 mb-2">CryptoCrew</p>
+                        <div class="message-content text-gray-300">
+                            <p>Hello! I'm your cryptocurrency assistant. Ask me about any crypto and I'll provide
+                                insights using real-time data and sentiment analysis.</p>
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <button onclick="quickPrompt('What is the current sentiment for Bitcoin?')"
+                                class="text-sm bg-dark-600 hover:bg-dark-500 px-4 py-2 rounded-lg transition-colors">Bitcoin
+                                sentiment</button>
+                            <button onclick="quickPrompt('Should I invest in Ethereum?')"
+                                class="text-sm bg-dark-600 hover:bg-dark-500 px-4 py-2 rounded-lg transition-colors">Ethereum
+                                advice</button>
+                            <button onclick="quickPrompt('What is the latest news about Solana?')"
+                                class="text-sm bg-dark-600 hover:bg-dark-500 px-4 py-2 rounded-lg transition-colors">Solana
+                                news</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="bg-dark-800 border-t border-dark-700 p-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex space-x-3 items-end">
+                <button class="p-3 rounded-xl hover:bg-dark-700 transition-colors text-gray-400">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <div class="flex-1 relative">
+                    <textarea id="messageInput" rows="1"
+                        placeholder="Ask about crypto sentiment, investment advice, or news..."
+                        class="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent placeholder-gray-500 text-gray-200 pr-12 resize-none overflow-hidden"
+                        style="min-height: 44px; max-height: 200px;"></textarea>
+                    <button class="absolute right-3 bottom-3 text-gray-400 hover:text-primary-500 transition-colors">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                </div>
+                <button onclick="sendMessage()" id="sendButton"
+                    class="p-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-800 transition-colors">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2 text-center">CryptoCrew may produce inaccurate information about
+                cryptocurrencies.</p>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-dark-800 rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl border border-dark-700">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-100">LLM Settings</h2>
+                <button id="closeSettings" class="text-gray-400 hover:text-gray-200 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Model Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Model</label>
+                    <select id="modelSelect"
+                        class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-600">
+                        <option value="meta-llama/llama-4-maverick-17b-128e-instruct">LLaMA-4 Maverick (17B)</option>
+                        <option value="meta-llama/llama-4-scout-17b-16e-instruct">LLaMA-4 Scout (17B)</option>
+                        <option value="meta-llama/llama-prompt-guard-2-22m">LLaMA Prompt Guard (22M)</option>
+                        <option value="moonshotai/kimi-k2-instruct">Kimi-K2 Instruct</option>
+                    </select>
+                </div>
+
+                <!-- Temperature -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        Temperature: <span id="tempValue">0.7</span>
+                    </label>
+                    <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7"
+                        class="w-full h-2 bg-dark-600 rounded-lg appearance-none cursor-pointer slider">
+                    <div class="flex justify-between text-xs text-gray-400 mt-1">
+                        <span>Focused (0.0)</span>
+                        <span>Balanced (1.0)</span>
+                        <span>Creative (2.0)</span>
+                    </div>
+                </div>
+
+                <!-- Max Tokens -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        Max Tokens: <span id="maxTokensValue">4096</span>
+                    </label>
+                    <input type="range" id="maxTokens" min="256" max="8192" step="256" value="4096"
+                        class="w-full h-2 bg-dark-600 rounded-lg appearance-none cursor-pointer slider">
+                    <div class="flex justify-between text-xs text-gray-400 mt-1">
+                        <span>256</span>
+                        <span>4096</span>
+                        <span>8192</span>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="flex space-x-3 mt-6">
+                <button id="resetSettings"
+                    class="flex-1 px-4 py-2 bg-dark-600 hover:bg-dark-500 text-gray-200 rounded-lg transition-colors">
+                    Reset to Default
+                </button>
+                <button id="saveSettings"
+                    class="flex-1 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
+                    Save Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userId = 'user_' + Math.random().toString(36).substr(2, 9);
+        const messageInput = document.getElementById('messageInput');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        // Settings elements
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettings = document.getElementById('closeSettings');
+        const saveSettings = document.getElementById('saveSettings');
+        const resetSettings = document.getElementById('resetSettings');
+
+        // Settings form elements
+        const modelSelect = document.getElementById('modelSelect');
+        const temperature = document.getElementById('temperature');
+        const maxTokens = document.getElementById('maxTokens');
+
+        // Settings value displays
+        const tempValue = document.getElementById('tempValue');
+        const maxTokensValue = document.getElementById('maxTokensValue');
+
+        // Theme management
+        let isDarkMode = true; // Default to dark mode
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            const body = document.body;
+
+            if (isDarkMode) {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                themeIcon.className = 'fas fa-moon text-yellow-300';
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                themeIcon.className = 'fas fa-sun text-yellow-400';
+            }
+
+            // Save preference
+            localStorage.setItem('cryptocrew-theme', isDarkMode ? 'dark' : 'light');
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('cryptocrew-theme');
+            if (savedTheme === 'light') {
+                isDarkMode = false;
+                toggleTheme(); // This will set light mode
+            }
+        }
+
+        // Settings management
+        let currentSettings = {
+            model: 'meta-llama/llama-4-maverick-17b-128e-instruct',
+            temperature: 0.7,
+            maxTokens: 4096
+        };
+
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('cryptocrew-settings');
+            if (savedSettings) {
+                currentSettings = { ...currentSettings, ...JSON.parse(savedSettings) };
+            }
+            updateSettingsUI();
+        }
+
+        function saveSettingsToStorage() {
+            localStorage.setItem('cryptocrew-settings', JSON.stringify(currentSettings));
+        }
+
+        function updateSettingsUI() {
+            modelSelect.value = currentSettings.model;
+            temperature.value = currentSettings.temperature;
+            maxTokens.value = currentSettings.maxTokens;
+
+            tempValue.textContent = currentSettings.temperature;
+            maxTokensValue.textContent = currentSettings.maxTokens;
+        }
+
+        function resetToDefaults() {
+            currentSettings = {
+                model: 'meta-llama/llama-4-maverick-17b-128e-instruct',
+                temperature: 0.7,
+                maxTokens: 4096
+            };
+            updateSettingsUI();
+        }
+
+        function openSettings() {
+            settingsModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSettingsModal() {
+            settingsModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Auto-resize textarea
+        function autoResizeTextarea() {
+            messageInput.style.height = 'auto';
+            messageInput.style.height = Math.min(messageInput.scrollHeight, 200) + 'px';
+        }
+
+        // Add event listeners
+        messageInput.addEventListener('keypress', handleKeyPress);
+        messageInput.addEventListener('input', function () {
+            toggleSendButton();
+            autoResizeTextarea();
+        });
+        themeToggle.addEventListener('click', toggleTheme);
+        settingsButton.addEventListener('click', openSettings);
+        closeSettings.addEventListener('click', closeSettingsModal);
+        saveSettings.addEventListener('click', () => {
+            currentSettings = {
+                model: modelSelect.value,
+                temperature: parseFloat(temperature.value),
+                maxTokens: parseInt(maxTokens.value)
+            };
+            saveSettingsToStorage();
+            closeSettingsModal();
+        });
+        resetSettings.addEventListener('click', resetToDefaults);
+
+        // Settings slider event listeners
+        temperature.addEventListener('input', () => tempValue.textContent = temperature.value);
+        maxTokens.addEventListener('input', () => maxTokensValue.textContent = maxTokens.value);
+
+        // Close modal when clicking outside
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) {
+                closeSettingsModal();
+            }
+        });
+
+        messageInput.focus();
+
+        // Load saved theme and settings
+        loadTheme();
+        loadSettings();
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function toggleSendButton() {
+            const sendButton = document.getElementById('sendButton');
+            if (messageInput.value.trim() !== '') {
+                sendButton.classList.remove('text-gray-400');
+                sendButton.classList.add('text-white', 'bg-primary-600', 'hover:bg-primary-700');
+            } else {
+                sendButton.classList.add('text-gray-400');
+                sendButton.classList.remove('text-white', 'bg-primary-600', 'hover:bg-primary-700');
+            }
+        }
+
+        function quickPrompt(prompt) {
+            messageInput.value = prompt;
+            toggleSendButton();
+            autoResizeTextarea();
+            messageInput.focus();
+        }
+
+        // Function to format markdown-like text
+        function formatMessage(text) {
+            // Convert **text** to <strong>text</strong>
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+            // Convert *text* to <em>text</em> (but not if it's already bold)
+            text = text.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+
+            // Convert newlines to <br> tags
+            text = text.replace(/\n/g, '<br>');
+
+            return text;
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            toggleSendButton();
+
+            // Show loading message
+            const loadingId = addMessage('', 'bot', true);
+
+            try {
+                // Call the backend API
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        user_id: userId,
+                        settings: currentSettings
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Remove loading message
+                removeMessage(loadingId);
+
+                // Add bot response
+                addMessage(data.response, 'bot');
+
+                // Add metadata with intent and sentiment info
+                const metadata = `🔍 Intent: ${data.intent} | 📊 Sentiment: ${data.sentiment} | 💰 Crypto: ${data.crypto} | ⏳ Confidence: ${(data.confidence * 100).toFixed(1)}%`;
+                addMessage(metadata, 'bot', false, 'text-xs text-gray-400 mt-1');
+
+            } catch (error) {
+                console.error('Error:', error);
+
+                // Remove loading message
+                removeMessage(loadingId);
+
+                // Add error message
+                addMessage('Sorry, I encountered an error while processing your request. Please try again.', 'bot');
+            }
+        }
+
+        function addMessage(text, sender, isLoading = false, additionalClasses = '') {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            const messageId = 'msg_' + Date.now();
+
+            messageDiv.id = messageId;
+
+            if (sender === 'user') {
+                messageDiv.className = 'flex justify-end';
+                messageDiv.innerHTML = `
+                    <div class="bg-primary-600 text-white rounded-xl px-6 py-4 max-w-4xl shadow-lg">
+                        <div class="message-content">${text}</div>
+                    </div>
+                `;
+            } else {
+                messageDiv.className = 'flex justify-start';
+
+                if (isLoading) {
+                    messageDiv.innerHTML = `
+                        <div class="bg-dark-700 rounded-xl px-6 py-4 max-w-4xl w-full shadow-lg border border-dark-600">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary-600 to-purple-900 flex items-center justify-center">
+                                    <i class="fas fa-robot text-white"></i>
+                                </div>
+                                <div class="typing-indicator flex space-x-1 items-center h-10">
+                                    <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                                    <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                                    <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const formattedText = formatMessage(text);
+                    messageDiv.innerHTML = `
+                        <div class="bg-dark-700 rounded-xl px-6 py-4 max-w-4xl w-full shadow-lg border border-dark-600">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary-600 to-purple-900 flex items-center justify-center">
+                                    <i class="fas fa-robot text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-primary-400 mb-2">CryptoCrew</p>
+                                    <div class="message-content text-gray-300 ${additionalClasses}">${formattedText}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            return messageId;
+        }
+
+        function removeMessage(messageId) {
+            const messageDiv = document.getElementById(messageId);
+            if (messageDiv) {
+                messageDiv.remove();
+            }
+        }
+    </script>
+</body>
+
+</html>

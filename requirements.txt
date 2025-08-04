@@ -1,0 +1,12 @@
+crewai
+langchain
+langchain-groq
+fastapi
+uvicorn
+pydantic
+httpx
+requests
+groq
+chromadb
+flask
+python-dotenv
