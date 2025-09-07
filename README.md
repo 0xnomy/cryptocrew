@@ -1,51 +1,30 @@
 # CryptoCrew
 
-Multi-agent cryptocurrency chatbot using CrewAI and Groq LLMs.
+CryptoCrew is a multi-agent chatbot for cryptocurrency insights, powered by CrewAI and Groq LLMs. It provides real-time market data, sentiment analysis, and personalized responses about various cryptocurrencies.
 
 ![CryptoCrew](mp.png)
 
-## Architecture
+## How It Works
+- The backend uses CrewAI agents for intent classification, market analysis, memory management, and response generation.
+- ChromaDB stores conversation history for context-aware replies.
+- The frontend (Flask) serves a chat UI and connects to the backend via REST API.
 
-- **Intent Router**: Classifies user intent and extracts cryptocurrency mentions
-- **Market Analyzer**: Fetches real-time price data and sentiment analysis
-- **Memory Manager**: Manages conversation history with ChromaDB
-- **Response Generator**: Generates personalized responses
+## APIs Used
+- Groq LLMs (via langchain-groq)
+- ChromaDB (for memory)
+- CoinGecko (for price data)
+- FastAPI (backend)
+- Flask (frontend)
+
+## Main Endpoints
+- `POST /chat` — Chat with the bot
+- `GET /health` — Service health check
 
 ## Quick Start
+1. Add your Groq API key to `.env`.
+2. Run `docker-compose up -d` or use `python start.py` for local development.
+3. Access the app at http://localhost:3000
 
-1. Create `.env` file:
-```
-GROQ_API_KEY=your_groq_api_key
-```
+## License
 
-2. Deploy with Docker:
-```bash
-docker-compose up -d
-```
-
-3. Access at http://localhost:3000
-
-## Local Development
-
-```bash
-pip install -r requirements.txt
-python start.py
-```
-
-## API Endpoints
-
-- `POST /chat` - Main chat endpoint
-- `GET /health` - Health check
-
-## Environment Variables
-
-- `GROQ_API_KEY` - Required Groq API key
-- `CHROMA_HOST` - ChromaDB host (default: localhost)
-- `CHROMA_PORT` - ChromaDB port (default: 8000)
-- `CREWAI_URL` - Backend URL (default: http://localhost:8001)
-
-## Ports
-
-- Frontend: 3000
-- Backend: 8001
-- ChromaDB: 8000 
+This project is licensed under the MIT License. 
